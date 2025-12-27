@@ -15,7 +15,3 @@ chmod +x web_recon.py
 - **Dependencies:** This script requires Python 3. 
 - **Ethics:** This is a passive tool for recon and info gathering. Use it responsibly.
 - **Accuracy:** This script relies on the site's HTML. If the web page is built entirely out of obfuscated JavaScript, expect to be underwhelmed. 
-
-
-```
-```
