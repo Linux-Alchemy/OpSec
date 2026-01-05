@@ -3,7 +3,7 @@
 A passive python recon tool designed to sift through the under belly of a web page when you're too lazy to look at the "View Source"
 
 ## How to use 
-- **Step1:** Ensure you have the `requests` and `beautifulsoup4` libraies installed
+- **Step1:** Ensure you have the `requests` and `beautifulsoup4` libraries installed
 - **Step 2:** Make the script executable:
 ```bash
 chmod +x web_recon.py 
