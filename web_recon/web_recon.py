@@ -6,9 +6,13 @@ from urllib.parse import urlparse
 
 # get the url to parse
 target_url = input("Enter a target URL (e.g., https://example.com): ")
+# use a disguise
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+}
 
 try:
-    response = requests.get(target_url, timeout=10)
+    response = requests.get(target_url, headers=headers, timeout=10)
     # checking HTTP status code
     response.raise_for_status()
     # feed the content to BeautifulSoup to make it searchable
