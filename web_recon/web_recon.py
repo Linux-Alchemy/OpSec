@@ -2,13 +2,13 @@
 
 import requests
 from bs4 import BeautifulSoup, Comment
-import re
+from urllib.parse import urlparse
 
 # get the url to parse
 target_url = input("Enter a target URL (e.g., https://example.com): ")
 
 try:
-    response = request.get(target_url, timeout=10)
+    response = requests.get(target_url, timeout=10)
     # checking HTTP status code
     response.raise_for_status()
     # feed the content to BeautifulSoup to make it searchable
@@ -45,9 +45,16 @@ try:
 
     # Hunting for external links
     print("Scanning for useful links...")
-    all_links = [a.get("href") for a in soup.find_all("a", href=True)]
+    all_links = [a.get("href") for a in soup.find_all("a", href=True) if a.get("href")]
+    base_domain = urlparse(target_url).netloc  # setting base domain to parse
     external = [
-        link for link in all_links if target_url not in link and link.startswith("http")
+        link
+        for link in all_links
+        if isinstance(link, str)  # ensure link is a string
+        if link.startswith(("http://", "https://"))
+        and urlparse(link).netloc
+        != base_domain  # filter out links same as base domain (internal links)
+        and urlparse(link).netloc  # filter out busted or empty links
     ]
 
     # removing duplicates
