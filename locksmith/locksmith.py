@@ -1,41 +1,36 @@
 # tool for encrypting files
+from re import sub
 from cryptography.fernet import Fernet
+import argparse
+import sys
 
 
-def generate_key(file_path):
-    key = Fernet.generate_key()
-    with open(file_path, "wb") as file:
-        file.write(key)
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="The Locksmith: File Encryption Tool")
+    subparsers = parser.add_subparsers(dest="command", help="Available sub-commands")
 
+    # Encryption Commands
+    encrypt_parser = subparsers.add_parser("encrypt", help="Encrypt File using provided key")
+    encrypt_parser.add_argument("input_file", help="Path to the source file")
+    encrypt_parser.add_argument("output_file", help="Path where the file is to be saved")
+    encrypt_parser.add_argument("--key", required=True, help="The Cryptographic Key required for Encryption")
+    encrypt_parser.add_argument("--verbose", action="store_true", help="Display the process in detail")
 
-def load_key(file_path):
-    with open(file_path, "rb") as file:
-        key = file.read()
-        return key
+    # Decryption Commands
+    decrypt_parser = subparsers.add_parser("decrypt", help="Decrypt a file using the original key")
+    decrypt_parser.add_argument("input_file", help="Path to source file")
+    decrypt_parser.add_argument("output_file", help="Path where the file is to be saved")
+    decrypt_parser.add_argument("--key", required=True, help="The Cryptographic Key required for Encryption")
+    decrypt_parser.add_argument("--verbose", action="store_true", help="Display the process in detail")
+
+    args = parser.parse_args()
+    return args
 
 
 def main():
-    print("========LockMaster Encryption Tool========")
-    print("Select an option from the menu:")
-    options = ["[1] Generate Key", "[2] Encrypt", "[3] Decrypt", "[4] Exit"]
-    print(*options, sep="\n")
+    args = parse_arguments()
 
-    while True:
-        try:
-            choice = int(input("Select an option from the menu (eg, 1, 2, 3, 4): "))
-            if choice == 1:
-                generate_key("super_secret.key")
-            elif choice == 2:
-                print("placeholder 2")
-            elif choice == 3:
-                print("placeholder 3")
-            elif choice == 4:
-                print("goodbye")
-                break
-            else:
-                print("It would be a lot better if you made a valid selection.")
-        except ValueError:
-            print("Invalid entry, try again.")
+    print(args)
 
 
 if __name__ == "__main__":
