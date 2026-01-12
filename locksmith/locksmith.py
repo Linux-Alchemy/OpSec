@@ -84,6 +84,30 @@ def validate_key_file(filepath):
     return True
 
 
+def load_key(key_path, verbose=False):
+    with open(key_path, 'rb') as key_file:
+        key = key_file.read()
+
+    if verbose:
+        print(f"Loaded key from {key_path}", file=sys.stderr)
+
+    return key
+
+
+def validate_key(key):
+    try:
+        key = Fernet(key)
+        return True
+    except ValueError as e:
+        print("[Error]: Invalid key format", file=sys.stderr)
+        return False
+    except Exception as e:
+        print("[Error]: Error validating key", file=sys.stderr)
+        return False
+
+
+
+
 
 def main():
     args = parse_arguments()
@@ -96,6 +120,10 @@ def main():
 
     print("All Validations Passed!")
     print(args)
+
+    key = load_key(args.key, args.verbose)
+    if not validate_key(key):
+        sys.exit(1)
 
 
 if __name__ == "__main__":
