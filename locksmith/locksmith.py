@@ -67,7 +67,7 @@ def validate_output_path(filepath):
 
     return True
 
-
+# function to check that the key path is legit
 def validate_key_file(filepath):
     if not os.path.exists(filepath):
         print("[Error]: Key file does not exist!", file=sys.stderr)
@@ -83,7 +83,7 @@ def validate_key_file(filepath):
 
     return True
 
-
+# loading and reading the key in binary
 def load_key(key_path, verbose=False):
     with open(key_path, 'rb') as key_file:
         key = key_file.read()
@@ -93,10 +93,10 @@ def load_key(key_path, verbose=False):
 
     return key
 
-
+# testing to ensure loaded key is legit 
 def validate_key(key):
     try:
-        key = Fernet(key)
+        cipher = Fernet(key)
         return True
     except ValueError as e:
         print("[Error]: Invalid key format", file=sys.stderr)
@@ -104,6 +104,31 @@ def validate_key(key):
     except Exception as e:
         print("[Error]: Error validating key", file=sys.stderr)
         return False
+
+# the actual encryption process
+def encrypt_file(input_file, output_file, key, verbose=False):
+    cipher = Fernet(key)
+    CHUNK_SIZE = 65536  # limiting byte size to read
+
+    if verbose:
+        print(f"Encrypting {input_file}...")
+
+    # starting encryption here
+    with open(input_file, 'rb') as infile:
+        with open(output_file, 'wb') as outfile:
+
+            while True:
+                chunk = infile.read(CHUNK_SIZE)
+                if not chunk: 
+                    break
+                encrypted_chunk = cipher.encrypt(chunk)
+                outfile.write(encrypted_chunk)
+
+        if verbose:
+            print("Encryption Complete")
+
+        return True
+
 
 
 
@@ -124,6 +149,11 @@ def main():
     key = load_key(args.key, args.verbose)
     if not validate_key(key):
         sys.exit(1)
+
+    if args.command == "encrypt":
+        if not encrypt_file(args.input_file, args.output_file, key, args.verbose):
+            print("[Error]: Encryption Failed!", file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
