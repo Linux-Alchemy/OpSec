@@ -1,5 +1,6 @@
 # tool for encrypting files
-from re import sub
+
+import re
 from cryptography.fernet import Fernet
 import argparse
 import sys
@@ -32,18 +33,19 @@ def parse_arguments():
 # function to check if file exists and is not a directory and if user has permission
 def validate_input_file(filepath):
     if not os.path.exists(filepath):
-        print("[Error]: Filepath does not exist!")
+        print("[Error]: Filepath does not exist!", file=sys.stderr)
         return False
 
     if os.path.isdir(filepath):
-        print("[Error]: Input is a directory!")
+        print("[Error]: Input is a directory!", file=sys.stderr)
         return False
 
     if not os.access(filepath, os.R_OK):
-        print("[ERROR]: You do not have permission to access this file!")
+        print("[ERROR]: You do not have permission to access this file!", file=sys.stderr)
         return False
 
     return True
+
 
 # function to validate directory and permissions
 def validate_output_path(filepath):
@@ -53,11 +55,11 @@ def validate_output_path(filepath):
         directory = "."
 
     if not os.path.exists(directory):
-        print("[Error]: Directory does not exist!")
+        print("[Error]: Directory does not exist!", file=sys.stderr)
         return False
 
     if not os.access(directory, os.W_OK):
-        print("[Error]: You do not have permission to write to the directory")
+        print("[Error]: You do not have permission to write to the directory", file=sys.stderr)
         return False
 
     if os.path.exists(filepath):
@@ -66,14 +68,36 @@ def validate_output_path(filepath):
     return True
 
 
+def validate_key_file(filepath):
+    if not os.path.exists(filepath):
+        print("[Error]: Key file does not exist!", file=sys.stderr)
+        return False
 
-'''
+    if os.path.isdir(filepath):
+        print("[Error]: File path is a directory!", file=sys.stderr)
+        return False
+
+    if not os.access(filepath, os.R_OK):
+        print("[Error]: You do not have permission to use this file!", file=sys.stderr)
+        return False
+
+    return True
+
+
+
 def main():
     args = parse_arguments()
+    if not validate_input_file(args.input_file):
+        sys.exit(1)
+    if not validate_output_path(args.output_file):
+        sys.exit(1)
+    if not validate_key_file(args.key):
+        sys.exit(1)
 
+    print("All Validations Passed!")
     print(args)
 
 
 if __name__ == "__main__":
     main()
-'''
+
