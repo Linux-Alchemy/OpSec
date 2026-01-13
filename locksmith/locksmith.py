@@ -110,6 +110,12 @@ def encrypt_file(input_file, output_file, key, verbose=False):
     cipher = Fernet(key)
     CHUNK_SIZE = 65536  # limiting byte size to read
 
+    output_dir = os.path.dirname(output_file)
+    if not output_dir:
+        output_dir = "."
+
+    temp_file = 
+
     if verbose:
         print(f"Encrypting {input_file}...")
 
