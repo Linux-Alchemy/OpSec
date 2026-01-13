@@ -8,4 +8,5 @@ small_encrypted.txt
 big_encrypted.txt
 decrypted_test.txt
 encrypt_test2.txt
-
+corrupted.txt
+out.txt

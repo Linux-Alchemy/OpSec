@@ -179,19 +179,29 @@ def main():
     print("All Validations Passed!")
     print(args)
 
-    key = load_key(args.key, args.verbose)
+    # attempt to load the key or exit with fail message
+    try:
+        key = load_key(args.key, args.verbose)
+    except Exception as e:
+        print("[Error]: Failed to load key.", file=sys.stderr)
+        sys.exit(2)
+
     if not validate_key(key):
         sys.exit(1)
 
+    # executing commands 
     if args.command == "encrypt":
-        if not encrypt_file(args.input_file, args.output_file, key, args.verbose):
-            print("[Error]: Encryption Failed!", file=sys.stderr)
-            sys.exit(1)
+        success = encrypt_file(args.input_file, args.output_file, key, args.verbose)
+    elif args.command == "decrypt":
+        success =  decrypt_file(args.input_file, args.output_file, key, args.verbose)
+    else:
+        print("[Error]: Unknown Operation")
+        sys.exit(1)
 
-    if args.command == "decrypt":
-        if not decrypt_file(args.input_file, args.output_file, key, args.verbose):
-            print("[Error]: Decryption Failed!", file=sys.stderr)
-            sys.exit(1)
+    if success:
+        sys.exit(0)
+    else:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
