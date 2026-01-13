@@ -1,7 +1,7 @@
 # tool for encrypting files
 
 import re
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 import argparse
 import sys
 import os
@@ -129,9 +129,42 @@ def encrypt_file(input_file, output_file, key, verbose=False):
 
         return True
 
+# function for decrypting a file
+def decrypt_file(input_file, output_file, key, verbose=False):
+    cipher = Fernet(key)
+    CHUNK_SIZE = 65536
 
+    if verbose:
+        print(f"Decrypting {input_file}...", file=sys.stderr)
 
+    try:
+        with open(input_file, 'rb') as infile:
+            with open(output_file, 'wb') as outfile:
 
+                while True:
+                    chunk = infile.read(CHUNK_SIZE)
+                    if not chunk:
+                        break
+
+                    try:
+                        chunk = cipher.decrypt(chunk)
+                        outfile.write(chunk)
+                    except InvalidToken:
+                        print("[Error]: Decryption Failed. Wrong key or the data is corrupt.", file=sys.stderr)
+                        if os.path.exists(output_file):
+                            os.remove(output_file)
+                        return False
+
+        if verbose:
+            print("Decryption Complete!")
+
+        return True
+
+    except Exception as e:
+        print("[Error]: Unexpected Error. Decryption Failed.")
+        if os.path.exists(output_file):
+            os.remove(output_file)
+        return False
 
 
 def main():
@@ -153,6 +186,11 @@ def main():
     if args.command == "encrypt":
         if not encrypt_file(args.input_file, args.output_file, key, args.verbose):
             print("[Error]: Encryption Failed!", file=sys.stderr)
+            sys.exit(1)
+
+    if args.command == "decrypt":
+        if not decrypt_file(args.input_file, args.output_file, key, args.verbose):
+            print("[Error]: Decryption Failed!", file=sys.stderr)
             sys.exit(1)
 
 

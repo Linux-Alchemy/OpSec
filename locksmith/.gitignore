@@ -4,5 +4,8 @@ test_file.txt
 test.key
 invalid_key.key
 big_test_file
-
+small_encrypted.txt
+big_encrypted.txt
+decrypted_test.txt
+encrypt_test2.txt
 
