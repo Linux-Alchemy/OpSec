@@ -7,6 +7,7 @@ An exploration into the dark arts of encryption and a fully workable CLI-based t
 - **Step 2:** Make the script executable
 ```bash
 chmod +x locksmith.py
+```
 - **Step 3:** Run the command with youre `input`, `output`, and a `key file`, preferrably one that exists.
 ```bash
 ./locksmith.pyt encrypt sensitive_stuff.txt secrets.enc --key mykey.key
@@ -18,6 +19,3 @@ chmod +x locksmith.py
 - **Validation:** This script checks if files exist, if you’re trying to encrypt a directory (don't), and if you actually have the permissions to touch the files in the first place.
 - **The Key:** The tool expects a path to a file containing a valid Fernet key. If you provide a corrupted key or a file full of nonsense, it will politely tell you to bugger off and try again.
 
-
-```
-```
