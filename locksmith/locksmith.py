@@ -1,6 +1,6 @@
 # tool for encrypting files
 
-import re
+
 from cryptography.fernet import Fernet, InvalidToken
 import argparse
 import sys
@@ -108,38 +108,35 @@ def validate_key(key):
 # the actual encryption process
 def encrypt_file(input_file, output_file, key, verbose=False):
     cipher = Fernet(key)
-    CHUNK_SIZE = 65536  # limiting byte size to read
-
-    output_dir = os.path.dirname(output_file)
-    if not output_dir:
-        output_dir = "."
-
-    temp_file = 
-
+    
     if verbose:
         print(f"Encrypting {input_file}...")
 
     # starting encryption here
     with open(input_file, 'rb') as infile:
         with open(output_file, 'wb') as outfile:
-
-            while True:
-                chunk = infile.read(CHUNK_SIZE)
-                if not chunk: 
-                    break
-                encrypted_chunk = cipher.encrypt(chunk)
-                outfile.write(encrypted_chunk)
+            
+            try:
+                data = infile.read() 
+                encrypted_data = cipher.encrypt(data)
+                outfile.write(encrypted_data)
+            except OSError as e:
+                print("[Error]: File operation failed!", file=sys.stderr)
+                if os.path.exists(output_file): # remove partial file
+                    os.remove(output_file)
+                return False
 
         if verbose:
             print("Encryption Complete")
 
         return True
 
+
+
 # function for decrypting a file
 def decrypt_file(input_file, output_file, key, verbose=False):
     cipher = Fernet(key)
-    CHUNK_SIZE = 65536
-
+    
     if verbose:
         print(f"Decrypting {input_file}...", file=sys.stderr)
 
@@ -147,19 +144,15 @@ def decrypt_file(input_file, output_file, key, verbose=False):
         with open(input_file, 'rb') as infile:
             with open(output_file, 'wb') as outfile:
 
-                while True:
-                    chunk = infile.read(CHUNK_SIZE)
-                    if not chunk:
-                        break
-
-                    try:
-                        chunk = cipher.decrypt(chunk)
-                        outfile.write(chunk)
-                    except InvalidToken:
-                        print("[Error]: Decryption Failed. Wrong key or the data is corrupt.", file=sys.stderr)
-                        if os.path.exists(output_file):
-                            os.remove(output_file)
-                        return False
+                try:
+                    data = infile.read()
+                    decrypted_data = cipher.decrypt(data)
+                    outfile.write(decrypted_data)
+                except InvalidToken:
+                    print("[Error]: Decryption Failed. Wrong key or the data is corrupt.", file=sys.stderr)
+                    if os.path.exists(output_file):
+                        os.remove(output_file)
+                    return False
 
         if verbose:
             print("Decryption Complete!")
