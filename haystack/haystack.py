@@ -1,4 +1,5 @@
-# haystack log parsing tool
+#!/usr/bin/env python
+
 
 import argparse
 import sys
@@ -11,7 +12,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description = "Haystack: Authentication log parser and threat detector")
     
     # commands
-    parser.add_argument("--since", default = "1 hour ago", help = "Lookback time (eg. 1 hour ago). (default: %(default)s")
+    parser.add_argument("--since", default = "1 hour ago", help = "Lookback time (eg. 1 hour ago). (default: %(default)s)")
     parser.add_argument("--threshold", type = int, default = 5, help = "Failed attempts before flagging")
     parser.add_argument("--output", default = None, help = "Write JSON output to file instead of stdout")
     parser.add_argument("--verbose", action = 'store_true', help = "Verbose output to stderr")
@@ -81,9 +82,9 @@ def main():
         sys.exit(0)
 
     if args.verbose:
-        print("First 5 entries:")
-
-
+        print("First 10 entries:", file=sys.stderr)
+        for line in log_lines[:10]:
+            print(f"  {line}", file=sys.stderr)
 
     #temp CLI tests
     if args.verbose:
